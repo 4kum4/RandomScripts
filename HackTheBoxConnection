@@ -1,0 +1,9 @@
+#!/bin/bash
+# A Simple Script to connect to HacktTheBox VPN
+# Save me in /usr/bash as something cool like "hackthebox" and give me rights
+#                   (\_/)
+#   AKUMA          ( •,•)
+#                  (")_(")
+# Modify the path of the two lines below
+cd /Documents/User/Location/user.ovpn
+sudo user.ovpn
