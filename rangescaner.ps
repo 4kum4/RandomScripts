@@ -1,0 +1,45 @@
+$portrange = 1..1024
+$net = "xxx.xxx.xxx" #IP network address
+$range = 1..254
+$timeout_ms = 5
+$x = '0/24'
+
+Get-Date
+Write-Host "Starting network scan against subnet $net.$x"
+Write-Host
+
+foreach ($r in $range)
+{
+    $ip = "{0}.{1}" -F $net,$r
+    Write-Host "Scanning $ip"
+
+    foreach ($port in $portrange)
+    {
+        $ErrorActionPreference = 'SilentlyContinue'
+        $socket = new-object System.Net.Sockets.TcpClient
+        $connect = $socket.BeginConnect($ip, $port, $null, $null)
+        $tryconnect = Measure-Command 
+        { 
+            $success =
+            $connect.AsyncWaitHandle.WaitOne($timeout_ms, $true)
+        } 
+        
+        | % totalmilliseconds
+        $tryconnect | Out-Null
+
+        if ($socket.Connected)
+        {
+            "tcp/$port open (Response Time: $tryconnect ms)"
+            $socket.Close()
+            $socket.Dispose()
+            $socket = $null
+        }
+
+        $ErrorActionPreference = 'Continue'
+    }
+
+    Write-Host
+}
+
+Write-Host "Scan ended successfully"
+Get-Date
